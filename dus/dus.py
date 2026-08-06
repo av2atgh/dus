@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from math import pow
 
 class DependencyUpriseStructure:
     """A class for the Dependency Uprise Structure (DUS) of a directed acyclic graph"""
@@ -59,11 +58,20 @@ class DependencyUpriseStructure:
         self.uprise_edges = uprise_edges
 
     def dependency_fibration_structure(self):
+        """Label each activity by the set of DUS levels its predecessors occupy.
+
+        The label packs one bit per DUS level. It must be built with exact
+        integer arithmetic: a float64 mantissa holds only 53 bits, so summing
+        ``2 ** j`` as floats silently merges distinct predecessor patterns once
+        a DAG has more than 53 uprise levels, under-counting the structures.
+        Python integers are arbitrary precision, so ``1 << j`` is exact at any
+        depth.
+        """
         fibration = []
         for i in range(self.n_nodes):
             fibration_ = 0
             for j in self.activity_predecessors_uprise_set[i]:
-                fibration_ += pow(2, j)
+                fibration_ |= 1 << int(j)
             fibration.append(fibration_)
         self.fibration = fibration
         self.n_fibrations = len(set(fibration))
