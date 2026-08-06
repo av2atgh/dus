@@ -9,8 +9,12 @@
 \newcommand{\rev}[1]{\medskip\noindent\textit{#1}\par\medskip}
 \newcommand{\reply}{\noindent\textbf{Response.}\ }
 
-\title{Response to Reviewers\\
-\large High-Level Structure of Dependency Networks}
+\title{Response to the Editor and Reviewers\\
+\large Construction project dependency networks compress exponentially into
+logical-depth levels whose mean distance to project completion is nearly
+independent of project size\\
+\normalsize (previously: ``High-Level Structure of Dependency Networks'')\\
+\normalsize Submission ID: dd2c9e03-9d4e-49f1-9513-ee3a977a7428}
 
 \author{Alexei Vazquez}
 \date{}
@@ -19,10 +23,11 @@
 
 \maketitle
 
-I thank the three reviewers for their careful and constructive reading. The
-comments identified two genuine weaknesses --- insufficient statistical support
-for the claimed relations, and an incomplete engagement with the neighbouring
-literatures --- and several presentational problems. I have addressed all of
+I thank the handling editor, Dr Roy Cerqueti, and the three reviewers for their
+careful and constructive reading. The comments identified two genuine weaknesses
+--- insufficient statistical support for the claimed relations, and an
+incomplete engagement with the neighbouring literatures --- together with an
+uninformative title and several presentational problems. I have addressed all of
 them, and in doing so I have had to weaken two of the claims made in the
 original manuscript. Specifically:
 
@@ -46,6 +51,8 @@ Predecessor Structure) to remove the clash with depth-first search.
 \item All key results are now replicated on public data (PSPLIB and two
 anonymised real schedules shipped with the code), and every number and figure
 in the paper is produced by scripts included in the public repository.
+\item The title has been replaced, following the editor's comment, by a single
+21-word sentence naming the system studied and the two principal findings.
 \end{itemize}
 
 The paper has been restructured accordingly: the schematic that was Figure 4 is
@@ -86,6 +93,51 @@ is committed to the public repository with the diagnosis in the commit message,
 and the released implementation now builds the label with exact integer bit
 shifts. It was Reviewer 1's request for public replication that prompted the
 rewrite which exposed the problem.
+
+\section*{Editor}
+
+\rev{Please ensure the results are accurately reported, any overstated
+conclusions are rewritten and the limitations of the work fully explained.}
+
+\reply This is the axis along which the revision has changed most, and in three
+concrete ways. On accurate reporting: every number in the paper has been
+recomputed from the raw schedules, which is how the coding defect described
+above came to light, and each figure and statistic is now produced by a script
+in the public repository. On overstated conclusions: the term ``scaling law''
+has been dropped for the relation between the number of DUS levels and the
+number of dependencies, which explains only 27\% of the variance and fails to
+extrapolate to public benchmark data; the small-world claim has been replaced by
+what a degree-preserving null model actually supports; and where model selection
+formally prefers a weakly increasing relation over an exactly constant one, the
+manuscript says so rather than claiming constancy. On limitations: the
+Discussion now carries an explicit paragraph covering the single-sector sample,
+the non-universality of the fitted coefficients, the fact that the DUS is one
+antichain decomposition among many with no optimality claim, and the scope of
+the null models used.
+
+\rev{The current title, ``High-Level Structure of Dependency Networks'', appears
+to be too short and does not clearly communicate the scientific focus of the
+manuscript. Could you please revise the title so that it is more descriptive,
+scientifically informative, and accurately reflects the content of the study?
+Where possible, the title should be read as one concise sentence which is under
+22 words long.}
+
+\reply Agreed, and the title has been changed to
+
+\begin{quote}
+``Construction project dependency networks compress exponentially into
+logical-depth levels whose mean distance to project completion is nearly
+independent of project size''
+\end{quote}
+
+which is a single sentence of 21 words. It names the empirical system
+(construction project dependency networks), the principal structural result
+(exponential compression into levels defined by logical depth), and the second
+finding that the mean distance to the end of the project does not grow
+appreciably with project size. The qualifier ``nearly'' is deliberate: model
+selection marginally prefers a weakly increasing relation to an exactly constant
+one, so a title asserting strict independence would overstate the result, which
+the comment above asks me to avoid.
 
 \section*{Reviewer 1}
 

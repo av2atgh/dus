@@ -1,0 +1,92 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=0.85in]{geometry}
+\usepackage{parskip}
+\setlength{\parskip}{0.45em}
+\usepackage{hyperref}
+
+\pagestyle{empty}
+
+\begin{document}
+
+\noindent
+Alexei Vazquez\\
+Nodes \& Links Ltd\\
+Salisbury House, Station Road, Cambridge, CB1 2LA, UK\\
+\texttt{alexei@nodeslinks.com}
+
+\vspace{0.8em}
+\noindent 6 August 2026
+
+\vspace{1em}
+\noindent Dear Dr Cerqueti,
+
+\vspace{0.3em}
+
+{\noindent\small
+\textbf{Re: revised manuscript, submission ID dd2c9e03-9d4e-49f1-9513-ee3a977a7428}\\
+\textbf{``Construction project dependency networks compress exponentially into
+logical-depth levels whose mean distance to project completion is nearly
+independent of project size''}\par}
+
+\vspace{0.3em}
+
+I am pleased to submit a revised version of the above manuscript for
+consideration as an Article in \emph{Scientific Reports}. I am grateful to the
+three reviewers for a careful and genuinely useful reading. Every point raised
+has been addressed, and a detailed point-by-point response is enclosed
+separately. The revision is substantial: the paper has been restructured, two of
+its claims have been weakened, one has been settled by new analysis, and all
+results are now reproducible from code and public data.
+
+The statistical support the reviewers asked for is now in place: both size
+relations are selected among four functional forms fitted under two error
+structures on a common likelihood scale, with bootstrap confidence intervals,
+residual diagnostics, and nested likelihood ratio tests of whether the three
+companies share parameters. A descriptive statistics table makes clear that the
+study rests on 1198 schedules rather than the handful one reviewer understandably
+inferred. One relation explains only 27\% of the variance and does not
+extrapolate to public benchmark data, so I no longer call it a scaling law. The
+small-world claim, rightly called close to tautological as originally supported,
+is now settled: I give a clustering coefficient appropriate to directed acyclic
+graphs, build two degree-preserving null models, and show that the short
+distances follow from the degree distributions of the coarse-grained network
+rather than from any special arrangement of the long-range dependencies. The
+results are replicated on the public PSPLIB benchmark; the engagement with the
+design-structure-matrix, graph-drawing and network-symmetry literatures is
+expanded; the explanatory schematic is now Figure 1; and the finer construction
+is renamed from DFS to DPS to remove a clash with depth-first search. Following
+your comment, the title has been replaced by a single 21-word sentence naming
+the system studied and the two principal findings.
+
+I would like to draw your attention to one matter directly. While rebuilding the
+analysis for public release, I found a defect in the code used for the original
+submission: a predecessor-pattern label was accumulated in floating point, which
+silently merged distinct patterns in schedules deeper than 53 levels and
+under-counted one reported quantity. I recomputed every number from the raw
+schedules with exact arithmetic. All other results reproduced identically; the
+affected exponent changes from 0.694 to 0.709 and one table column shifts
+slightly, leaving the conclusions unchanged. The defect and its consequences are
+described in full in the response, and the fix is public. I thought it important
+to report this openly rather than substitute the corrected values silently.
+
+The manuscript is original work, is not under consideration elsewhere, and I am
+the sole author with no conflicts of interest to disclose. The implementation and
+the scripts that generate every figure, table and statistical test are available
+at \url{https://github.com/av2atgh/dus}. The construction schedules are
+proprietary; the paper reports their summary statistics and shows the central
+results are reproducible on public data.
+
+Thank you for your time, and for the reviewers' effort, which has improved the
+paper considerably.
+
+\vspace{-0.4em}
+
+\vspace{0.3em}
+\noindent\begin{minipage}{\linewidth}
+Sincerely,\\[1.4em]
+Alexei Vazquez\\
+Nodes \& Links Ltd
+\end{minipage}
+
+\end{document}
