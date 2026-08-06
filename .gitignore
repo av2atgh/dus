@@ -20,3 +20,6 @@ manuscript/*.out
 manuscript/*.synctex.gz
 manuscript/*.bbl
 manuscript/*.blg
+
+# proprietary schedule summaries -- never commit
+data/

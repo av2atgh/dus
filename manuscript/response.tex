@@ -48,6 +48,41 @@ The paper has been restructured accordingly: the schematic that was Figure 4 is
 now Figure 1, a descriptive statistics table and two new figures have been
 added, and the manuscript now has six figures and one table.
 
+\subsection*{A correction found while preparing this revision}
+
+While rebuilding the analysis so that it could be released publicly, I
+recomputed every quantity directly from the raw schedules and compared the
+result against the summary table used for the original submission. The number of
+activities, the number of dependencies, the number of DUS levels and the
+distances agreed exactly for all 1198 projects. The number of DPS classes did
+not.
+
+The cause was a defect in the original code. The DPS label packs one bit per DUS
+level, and it was accumulated with \texttt{math.pow(2,\,j)}, which returns a
+float. A float64 mantissa holds 53 bits, so once a schedule has more than 53 DUS
+levels the low-order bits are lost, distinct predecessor patterns collapse onto
+the same value, and counting distinct labels under-estimates the number of DPS
+classes. The error is exactly zero at or below 53 levels and grows with depth:
+across the 1198 projects the under-count had a median factor of $1.010$, rising
+to a median of $1.05$ between 100 and 200 levels and $1.17$ above 200 levels,
+with a worst case of $1.51$.
+
+Because the under-count grows with project size, it biased the fitted exponent
+downward. Every DPS result in this revision has been recomputed with exact
+integer arithmetic. The corrected exponent is $0.709$ $[0.692, 0.724]$ rather
+than $0.694$ $[0.679, 0.709]$, the prefactor is $1.42$ rather than $1.56$, and
+the DPS column of Table 1 shifts slightly. The conclusion is
+unchanged and, if anything, strengthened: the growth is a power law, decisively
+preferred over the alternatives, with an exponent well below $1$. The DUS
+results, the distance results and Figures 3 and 4 are untouched, since the
+defect affected only the DPS labelling.
+
+I report this rather than silently substituting the corrected numbers. The fix
+is committed to the public repository with the diagnosis in the commit message,
+and the released implementation now builds the label with exact integer bit
+shifts. It was Reviewer 1's request for public replication that prompted the
+rewrite which exposed the problem.
+
 \section*{Reviewer 1}
 
 \rev{The manuscript proposes a deterministic two-step coarse-graining method for
@@ -155,10 +190,10 @@ exponent, would be appropriate.}
 
 \reply The fitting method is now specified in full, and residual diagnostics and
 a confidence interval are reported. The preferred model is a power law under
-multiplicative errors, $1.56\,x^{0.69}$, ahead of the linear relation by
-$\Delta\mathrm{AIC} = 314$ and the two-parameter logarithm by
-$\Delta\mathrm{AIC} = 1328$. The exponent is $0.694$ with a 95\% bootstrap
-confidence interval of $[0.679, 0.709]$, comfortably excluding $1$, and
+multiplicative errors, $1.42\,x^{0.71}$, ahead of the linear relation by
+$\Delta\mathrm{AIC} = 269$ and the two-parameter logarithm by
+$\Delta\mathrm{AIC} = 1310$. The exponent is $0.709$ with a 95\% bootstrap
+confidence interval of $[0.692, 0.724]$, comfortably excluding $1$, and
 $R^2 = 0.81$ on the logarithm. The residuals of this fit are heteroscedastic,
 which is now stated explicitly; this is precisely why the interval quoted is a
 nonparametric case-resampling bootstrap rather than a nominal standard error.
@@ -203,9 +238,9 @@ the two answers turn out to be different:
 ($\mathrm{LR} = 2.4$, $\mathrm{df} = 2$, $p = 0.30$; shared value $15.1$), and
 AIC prefers the shared-coefficient model. The offsets do differ
 ($p = 5 \times 10^{-9}$).
-\item DPS: a shared exponent is not rejected ($\mathrm{LR} = 1.4$,
-$\mathrm{df} = 2$, $p = 0.50$; shared value $0.71$), while the prefactors differ
-($p = 4 \times 10^{-7}$).
+\item DPS: a shared exponent is not rejected ($\mathrm{LR} = 1.1$,
+$\mathrm{df} = 2$, $p = 0.59$; shared value $0.72$), while the prefactors differ
+($p = 4 \times 10^{-6}$).
 \end{itemize}
 
 So the original claim that ``the same relation describes all three companies''
@@ -261,7 +296,7 @@ $2.7$ for small, medium and large projects.
 but negligible in magnitude. For completeness the manuscript also reports that
 the same model selection procedure formally prefers a weakly increasing linear
 relation over a strictly constant one ($\Delta\mathrm{AIC} = 20$, slope $0.0041$
-per level, 95\% CI $[0.0019, 0.0062]$). The implied growth is negligible: across
+per level, 95\% CI $[0.0018, 0.0062]$). The implied growth is negligible: across
 the whole range the fitted distance rises from $2.5$ to $4.7$, a factor of
 $1.9$, while $m$ grows by a factor of $41$. I preferred to report this rather
 than claim exact constancy.
@@ -311,7 +346,7 @@ extreme lower tail of ours --- just $2.4\%$ of the construction projects are tha
 small --- so it probes the relations where they were barely constrained. The DPS
 power law, fitted on construction data and evaluated two orders of magnitude
 below the median project on which it was estimated, predicts the PSPLIB values to
-a median observed/predicted ratio of $0.76$. The power law fitted within PSPLIB
+a median observed/predicted ratio of $0.77$. The power law fitted within PSPLIB
 alone gives exponent $0.86$, also sub-linear. This is a genuine out-of-sample
 success.
 \item The DUS logarithm does not extrapolate: it over-predicts PSPLIB by more
