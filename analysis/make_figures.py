@@ -4,8 +4,9 @@ fig1  schematic: WBS, dependency network, DUS and DPS (new Figure 1)
 fig2  DUS profiles of two real construction schedules
 fig3  number of DUS levels vs number of dependencies, with fit and CI band
 fig4  mean DUS distance to the end vs number of DUS levels
-fig5  number of DPS classes vs number of dependencies, with fit and CI band
-fig6  PSPLIB replication
+fig5  small-world test against degree-preserving null models
+fig6  number of DPS classes vs number of dependencies, with fit and CI band
+fig7  PSPLIB replication
 
 Run:  python analysis/make_figures.py
 """
@@ -332,7 +333,7 @@ def fig4():
     savefig(fig, "fig4.pdf")
 
 
-def fig5():
+def fig_dps_scaling():   # Figure 6
     d = load()
     v = RES["dps_scaling"]["power|multiplicative"]
     a, b = v["params"]
@@ -352,14 +353,14 @@ def fig5():
     ax.text(0.97, 0.05,
             f"$q={b:.2f}$ [{bci[0]:.2f}, {bci[1]:.2f}]\n$R^2={v['r2']:.2f}$",
             transform=ax.transAxes, ha="right", va="bottom", fontsize=11)
-    savefig(fig, "fig5.pdf")
+    savefig(fig, "fig6.pdf")
 
 
 # ---------------------------------------------------------------------------
 # Figure 6 -- PSPLIB replication (Reviewer 1 point 4)
 # ---------------------------------------------------------------------------
 
-def fig6():
+def fig_psplib():   # Figure 7
     """PSPLIB replication, with the construction fits extrapolated out of sample."""
     p = pd.read_csv(HERE / "psplib_instances.csv")
     ex = pd.read_csv(HERE / "public_examples.csv")
@@ -406,10 +407,10 @@ def fig6():
             a.legend(loc="upper left", frameon=False, fontsize=8.5,
                      handletextpad=0.3, labelspacing=0.22)
     fig.subplots_adjust(wspace=0.25)
-    savefig(fig, "fig6.pdf")
+    savefig(fig, "fig7.pdf")
 
 
-def fig7():
+def fig_nullmodel():   # Figure 5
     """Small-world test: clustering and distance against degree-preserving nulls."""
     d = pd.read_csv(HERE / "smallworld.csv")
     fig, ax = plt.subplots(1, 2, figsize=(11.5, 4.4))
@@ -434,7 +435,7 @@ def fig7():
                transform=a.transAxes, va="top", fontsize=11)
         a.legend(loc="lower right", frameon=False, fontsize=10)
     fig.subplots_adjust(wspace=0.28)
-    savefig(fig, "fig7.pdf")
+    savefig(fig, "fig5.pdf")
 
 
 if __name__ == "__main__":
@@ -442,6 +443,6 @@ if __name__ == "__main__":
     fig2()
     fig3()
     fig4()
-    fig5()
-    fig6()
-    fig7()
+    fig_nullmodel()    # fig5.pdf
+    fig_dps_scaling()  # fig6.pdf
+    fig_psplib()       # fig7.pdf

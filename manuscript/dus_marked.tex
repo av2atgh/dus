@@ -1,7 +1,7 @@
 \documentclass[11pt,a4paper]{article}
 %DIF LATEXDIFF DIFFERENCE FILE
 %DIF DEL dus_original_submission.tex   Thu Aug  6 12:05:05 2026
-%DIF ADD dus.tex                       Thu Aug  6 13:37:44 2026
+%DIF ADD dus.tex                       Thu Aug  6 14:39:18 2026
 
 \usepackage[margin=1in]{geometry}
 \usepackage{graphicx}
@@ -103,7 +103,7 @@
 \maketitle
 
 \begin{abstract}
-Dependency networks describe how activities, events or processes are linked by prerequisite relationships, but real networks are often too large to interpret directly. Here we ask how to summarise such a network at a higher level of organisation, using construction project schedules as a case study. We introduce two simple, deterministic ways of grouping activities: the Dependency Uprise Structure (DUS), which collects activities that share the same logical depth in the network, and the Dependency \DIFdelbegin \DIFdel{Fibration Structure (DFS}\DIFdelend \DIFaddbegin \DIFadd{Predecessor Structure (DPS}\DIFaddend ), which refines this grouping by also recording which earlier levels each activity depends on. \DIFdelbegin \DIFdel{Applied to construction projects, the DUS compresses the original }\DIFdelend \DIFaddbegin \DIFadd{Across 1198 construction project schedules from three companies, spanning 36 to 150}{\DIFadd{,}}\DIFadd{692 dependencies, the number of DUS levels grows only logarithmically with the number of dependencies, while the number of DPS classes grows as a sub-linear power law with exponent $0.71$ (95\% CI $[0.69, 0.72]$). Model selection favours these two functional forms over the alternatives we considered, and the logarithmic coefficient and the power-law exponent are statistically indistinguishable across the three companies. The DUS therefore compresses the }\DIFaddend dependency network exponentially and the \DIFdelbegin \DIFdel{DFS }\DIFdelend \DIFaddbegin \DIFadd{DPS }\DIFaddend provides an intermediate, sub-linear summary. \DIFdelbegin \DIFdel{Both reveal a small-world organisation that is hidden in the raw schedule}\DIFdelend \DIFaddbegin \DIFadd{In both cases the mean distance from a DUS level to the end of the project is almost independent of project size, because dependencies that skip levels act as shortcuts. We replicate the qualitative results on the publicly available PSPLIB benchmark}\DIFaddend . Because dependency networks appear in fields as diverse as project management, causal inference, ancestry analysis and neural networks, the same approach should generalise \DIFdelbegin \DIFdel{well }\DIFdelend beyond construction. A Python implementation is available at \url{https://github.com/av2atgh/dus}.
+Dependency networks describe how activities, events or processes are linked by prerequisite relationships, but real networks are often too large to interpret directly. Here we ask how to summarise such a network at a higher level of organisation, using construction project schedules as a case study. We introduce two simple, deterministic ways of grouping activities: the Dependency Uprise Structure (DUS), which collects activities that share the same logical depth in the network, and the Dependency \DIFdelbegin \DIFdel{Fibration Structure (DFS}\DIFdelend \DIFaddbegin \DIFadd{Predecessor Structure (DPS}\DIFaddend ), which refines this grouping by also recording which earlier levels each activity depends on. \DIFdelbegin \DIFdel{Applied to construction projects, the DUS compresses the original }\DIFdelend \DIFaddbegin \DIFadd{Across 1198 construction project schedules from three companies, spanning 36 to 150}{\DIFadd{,}}\DIFadd{692 dependencies, the number of DUS levels grows only logarithmically with the number of dependencies, while the number of DPS classes grows as a sub-linear power law with exponent $0.71$ (95\% CI $[0.69, 0.72]$). Model selection favours these two functional forms over the alternatives we considered, and the logarithmic coefficient and the power-law exponent are statistically indistinguishable across the three companies. The DUS therefore compresses the }\DIFaddend dependency network exponentially and the \DIFdelbegin \DIFdel{DFS }\DIFdelend \DIFaddbegin \DIFadd{DPS }\DIFaddend provides an intermediate, sub-linear summary. \DIFdelbegin \DIFdel{Both reveal a small-world organisation that is hidden in the raw schedule. }\DIFdelend \DIFaddbegin \DIFadd{The mean distance from a DUS level to the end of the project is almost independent of project size, because dependencies that skip levels act as shortcuts; a degree-preserving null model shows that this shallowness follows from the degree distributions of the DUS network rather than from any special arrangement of those shortcuts. We replicate the qualitative results on the publicly available PSPLIB benchmark. }\DIFaddend Because dependency networks appear in fields as diverse as project management, causal inference, ancestry analysis and neural networks, the same approach should generalise \DIFdelbegin \DIFdel{well }\DIFdelend beyond construction. A Python implementation is available at \url{https://github.com/av2atgh/dus}.
 \end{abstract}
 
 \section*{Introduction}
@@ -256,16 +256,39 @@ A second question is how far apart, on average, two \DIFdelbegin \DIFdel{DUSs }\
 \cite{watts98}}\hskip0pt%DIFAUXCMD
 . }\DIFdelend \DIFaddbegin \DIFadd{the arcs in Figure \ref{profiles}). This is the mechanism that produces short paths in small-world networks \mbox{%DIFAUXCMD
 \cite{watts98}}\hskip0pt%DIFAUXCMD
-, and it answers a question a project manager might ask directly: a schedule with 500 DUS levels is not 500 steps deep in any practical sense, because a handful of long-range dependencies carry information from almost anywhere to the end in two or three steps. We stop short of calling these networks small-world in the Watts--Strogatz sense. That definition requires both short path lengths and clustering substantially above a degree-preserving random null, and the standard clustering coefficient is not well defined for a DAG, in which triangles cannot close. Establishing a clustering criterion appropriate to DAGs, and the right null model to compare it against, is beyond the scope of this paper. What the data support is the shorter statement: shortcuts make the DUS network shallow, and its depth does not grow appreciably with project size.
+, and it answers a question a project manager might ask directly: a schedule with 500 DUS levels is not 500 steps deep in any practical sense, because a handful of long-range dependencies carry information from almost anywhere to the end in two or three steps.
 }\DIFaddend 
 
-\subsection*{DUS fine structure}
+\DIFaddbegin \subsection*{\DIFadd{What makes the DUS network shallow}}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig5.pdf}
+\caption{\DIFaddFL{The shallowness follows from the degree distributions. Observed versus degree-preserving null values of (A) the transitive clustering coefficient $C$ and (B) the mean distance to the final DUS level $L$, for 198 construction projects. The null holds the DUS spine fixed and rewires the skip dependencies while preserving every level's skip in-degree and out-degree; each point is the average over 20 randomisations. Both quantities lie essentially on the identity line, so randomly reallocating the shortcuts reproduces what is observed.}}
+\label{nullmodel}
+\end{figure}
+
+\DIFadd{Does this shallowness require the shortcuts to be arranged in some particular way? To find out we compared each DUS network with a degree-preserving null. Clustering in a DAG cannot be measured with the usual coefficient, because a cyclic triangle is impossible; a }{\em \DIFadd{transitive}} \DIFadd{triangle is not, since $i \to j$, $j \to k$ and the shortcut $i \to k$ are mutually consistent with acyclicity. We therefore use the transitive clustering coefficient $C$, the fraction of directed two-paths $i \to j \to k$ that are closed by an edge $i \to k$. It is the admissible member of the directed-triangle family, it is exactly the quantity a shortcut creates, and it is zero for a pure chain. The null holds the spine fixed, since Eq.~(\ref{DUS_definition}) forces it and randomisation should not be free to destroy it, and rewires the skip dependencies by double-edge swaps that preserve every level's skip in-degree and skip out-degree (see Methods).
+}
+
+\DIFadd{Across 198 projects the observed values are almost exactly those of the null (Figure \ref{nullmodel}): $C/C_{\mathrm{null}} = 1.04$ with an interquartile range of $[1.01, 1.10]$, and $L/L_{\mathrm{null}} = 1.03$ with an interquartile range of $[1.00, 1.08]$. The short distances are therefore a consequence of the degree distributions of the DUS network rather than of any special placement of the shortcuts: given how many long-range dependencies each level has, putting them anywhere reproduces the observed distances. This closes a link in a mechanistic chain, because the duplication-split model of activity networks \mbox{%DIFAUXCMD
+\cite{vazquez2023activity} }\hskip0pt%DIFAUXCMD
+generates degree distributions of just this kind, and those distributions are what the present result shows to be sufficient.
+}
+
+\DIFadd{It also settles how the small-world question should be posed here. The Watts--Strogatz criterion asks for clustering substantially in excess of a degree-matched null, and that excess is absent, so the criterion is not the informative test for these networks and we state the property directly instead of invoking the label. The property itself is not in question: the mean distance to the end of the project is $2.5$ levels where a chain of the same depth would give up to $285$.
+}
+
+\DIFadd{The degree sequence does not, however, account for everything. Under a stronger randomisation, which preserves the in-degree and out-degree of every }{\em \DIFadd{activity}}\DIFadd{, keeps the network acyclic and then re-derives the DUS decomposition from scratch, the resulting networks are roughly half as deep as the real ones (median $m/m_{\mathrm{null}} \approx 2$, a conservative figure since the discrepancy widens with further randomisation). Real schedules are thus considerably more sequential than a degree-matched random DAG. The degree distributions determine how short the paths through the DUS network are; they do not determine how deep it is.
+}
+
+\DIFaddend \subsection*{DUS fine structure}
 
 \begin{figure}[t]
 \centering
 \DIFdelbeginFL %DIFDELCMD < \includegraphics[width=0.7\linewidth]{fig4.pdf}
 %DIFDELCMD < %%%
-\DIFdelendFL \DIFaddbeginFL \includegraphics[width=0.62\linewidth]{fig5.pdf}
+\DIFdelendFL \DIFaddbeginFL \includegraphics[width=0.62\linewidth]{fig6.pdf}
 \DIFaddendFL \caption{\DIFdelbeginFL \DIFdelFL{Nodes in }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{The number of DPS classes grows as }\DIFaddendFL a \DIFdelbeginFL \DIFdelFL{dependency network are stratified based on their dependency patterns. Node colour indicates }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{sub-linear power law with }\DIFaddendFL the \DIFdelbeginFL \DIFdelFL{DFS}\DIFdelendFL \DIFaddbeginFL \DIFaddFL{number of dependencies. Each point is one of 1198 construction projects}\DIFaddendFL , \DIFdelbeginFL \DIFdelFL{and }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{coloured by company. The dashed line is }\DIFaddendFL the \DIFdelbeginFL \DIFdelFL{node label gives }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{maximum-likelihood fit $1.42\,x^{0.71}$ under multiplicative errors; }\DIFaddendFL the \DIFdelbeginFL \DIFdelFL{DUS}\DIFdelendFL \DIFaddbeginFL \DIFaddFL{grey band is the 95\% bootstrap confidence region}\DIFaddendFL . \DIFaddbeginFL \DIFaddFL{The dash-dotted line is a linear reference of slope $1$.}\DIFaddendFL }
 \DIFdelbeginFL %DIFDELCMD < \label{example}
 %DIFDELCMD < %%%
@@ -312,7 +335,7 @@ As before, we collapse the dependency network onto its \DIFdelbegin \DIFdel{DFSs
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{fig6.pdf}
+\includegraphics[width=\linewidth]{fig7.pdf}
 \caption{\DIFaddFL{Replication on public benchmark instances. (A) Number of DUS levels and (B) number of DPS classes against the number of dependencies, for 2040 single-mode PSPLIB instances (coloured), the 1198 construction schedules of this study (grey), and the two anonymised real schedules distributed with the code repository (stars). Dashed lines are the fits to the construction data, evaluated two orders of magnitude below the median project size on which they were estimated. Only $2.4\%$ of the construction projects are as small as the largest PSPLIB instance.}}
 \label{public}
 \end{figure}
@@ -335,10 +358,13 @@ Dependency networks admit two natural higher-level representations forming a cha
 \DIFadd{The practical value of these constructions to project management is that they give a view of the schedule that the WBS cannot. A WBS reports progress by deliverable; the DUS reports it by logical depth, which is what determines what can start next. Three uses follow directly. First, reporting and tracking: the DUS profile of Figure \ref{profiles} compresses a schedule of tens of thousands of activities into a picture with of order a hundred nodes, on which progress, cost or risk can be overlaid, and in which a stalled level or an unusually large concentration of work is immediately visible. Second, diagnosis: the arcs in Figure \ref{profiles} are dependencies that jump many levels, and these are exactly the links whose delay propagates furthest; they are candidates for scrutiny because a long-range dependency is often either a genuine structural constraint or an artefact of how the schedule was built. Third, as an input }\DIFaddend to risk models\DIFdelbegin \DIFdel{that estimate project duration and cost. }\DIFdelend \DIFaddbegin \DIFadd{, since a coarse-grained network with a hundred nodes is tractable for simulation where one with a hundred thousand is not. That the compression is deterministic and parameter-free matters here: two planners applying it to the same schedule obtain the same answer, which is not true of clustering methods that depend on an objective function or a random seed.
 }\DIFaddend 
 
-\DIFaddbegin \DIFadd{Three limitations should be kept in view. The relations reported here are established on schedules from three companies in one sector, and the failure of the logarithmic relation to extrapolate to PSPLIB shows that the coefficients are not universal. The DUS is one antichain decomposition among many, and we have not shown it is optimal by any criterion; it is justified by being canonical, cheap and interpretable rather than by an optimality argument. Finally, the shortcut result is a statement about distances only, and we have deliberately not claimed the full small-world property, which would require a notion of clustering appropriate to DAGs.
+\DIFaddbegin \DIFadd{Three limitations should be kept in view. The relations reported here are established on schedules from three companies in one sector, and the failure of the logarithmic relation to extrapolate to PSPLIB shows that the coefficients are not universal. The DUS is one antichain decomposition among many, and we have not shown it is optimal by any criterion; it is justified by being canonical, cheap and interpretable rather than by an optimality argument. Finally, the null models used here randomise one structure at a time, holding either the DUS spine or the activity degree sequence fixed; they bound what those constraints alone imply, and are not a generative account of how real schedules come to have the degree distributions they do.
 }
 
-\DIFaddend Because the construction is purely topological, the same machinery applies to any system \DIFdelbegin \DIFdel{that can be represented }\DIFdelend \DIFaddbegin \DIFadd{representable }\DIFaddend as a directed acyclic graph, including causal networks, ancestries and feedforward neural networks. \DIFdelbegin \DIFdel{Two questions naturally follow. First, do the size scaling laws }\DIFdelend \DIFaddbegin \DIFadd{Three questions follow. Do the size relations }\DIFaddend observed for construction schedules carry over to \DIFdelbegin \DIFdel{these other settings? Second, what }\DIFdelend \DIFaddbegin \DIFadd{those settings, and if the coefficients differ, what do the differences measure? What }\DIFaddend features of the underlying dependency network determine the structure of its \DIFdelbegin \DIFdel{DFS }\DIFdelend \DIFaddbegin \DIFadd{DPS }\DIFaddend and DUS networks\DIFdelbegin \DIFdel{, including the scaling between them}\DIFdelend \DIFaddbegin \DIFadd{? And what is the right definition of clustering in a DAG, which would allow the shortcut result reported here to be sharpened into a proper small-world claim}\DIFaddend ?
+\DIFaddend Because the construction is purely topological, the same machinery applies to any system \DIFdelbegin \DIFdel{that can be represented }\DIFdelend \DIFaddbegin \DIFadd{representable }\DIFaddend as a directed acyclic graph, including causal networks, ancestries and feedforward neural networks. \DIFdelbegin \DIFdel{Two questions naturally follow. First, do the size scaling laws }\DIFdelend \DIFaddbegin \DIFadd{Three questions follow. Do the size relations }\DIFaddend observed for construction schedules carry over to \DIFdelbegin \DIFdel{these other settings? Second, what }\DIFdelend \DIFaddbegin \DIFadd{those settings, and if the coefficients differ, what do the differences measure? What }\DIFaddend features of the underlying dependency network determine the structure of its \DIFdelbegin \DIFdel{DFS }\DIFdelend \DIFaddbegin \DIFadd{DPS }\DIFaddend and DUS networks\DIFdelbegin \DIFdel{, including the scaling between them? }\DIFdelend \DIFaddbegin \DIFadd{? And since the degree distributions of the DUS network are enough to produce its short distances but not its depth, what generative mechanism fixes the depth? The duplication-split model \mbox{%DIFAUXCMD
+\cite{vazquez2023activity} }\hskip0pt%DIFAUXCMD
+is a natural candidate, since its split operation creates sequential structure of exactly the sort the degree-preserving null destroys.
+}\DIFaddend 
 
 \section*{Methods}
 
@@ -358,9 +384,42 @@ The construction project schedules analysed here were drawn from the Nodes \& Li
 \DIFaddend The DUS index $u_i$ defined in \DIFdelbegin \DIFdel{equation }\DIFdelend \DIFaddbegin \DIFadd{Eq.~}\DIFaddend (\ref{DUS_definition}) is computed by first sorting the activities into a topological order \DIFaddbegin \DIFadd{using Kahn's algorithm}\DIFaddend , then sweeping through that order and applying \DIFaddbegin \DIFadd{Eq.~}\DIFaddend (\ref{DUS_definition}) to each activity in turn. The cost is linear in the number of activities plus the number of dependencies. The \DIFdelbegin \DIFdel{DFS }\DIFdelend \DIFaddbegin \DIFadd{DPS }\DIFaddend index $f_i$ defined in \DIFdelbegin \DIFdel{equation (2}\DIFdelend \DIFaddbegin \DIFadd{Eq.~(\ref{dps_definition}}\DIFaddend ) requires a single additional pass over the dependencies once $u_i$ is known: for each activity $i$ we record which lower DUS levels its predecessors occupy, and combine these bits into the integer label given by \DIFdelbegin \DIFdel{(2}\DIFdelend \DIFaddbegin \DIFadd{Eq.~(\ref{dps_definition}}\DIFaddend ). The DUS and \DIFdelbegin \DIFdel{DFS }\DIFdelend \DIFaddbegin \DIFadd{DPS }\DIFaddend networks are then obtained by collapsing the dependency network onto these labels and accumulating edge weights. \DIFaddbegin \DIFadd{Distances within the DUS network are shortest-path distances in the unweighted directed network, computed by a single reverse sweep over the levels.
 }\DIFaddend 
 
-\subsection*{\DIFdelbegin \DIFdel{Code availability}\DIFdelend \DIFaddbegin \DIFadd{Statistical methods}\DIFaddend }
+\subsection*{\DIFdelbegin \DIFdel{Code availability}\DIFdelend \DIFaddbegin \DIFadd{Null models for the DUS network}\DIFaddend }
 
-\DIFaddbegin \DIFadd{For each relation we fitted four candidate functional forms: a one-parameter logarithm $y = p\ln x$, a two-parameter logarithm $y = p\ln x + c$, a power law $y = a x^{b}$, and a linear relation $y = ax + b$. Each was fitted by maximum likelihood under two error structures: additive, $y = f(x) + \varepsilon$ with $\varepsilon \sim N(0,\sigma^2)$, and multiplicative, $y = f(x)\,e^{\varepsilon}$ with $\varepsilon \sim N(0,\sigma^2)$. The multiplicative log-likelihoods include the Jacobian term $-\sum_i \ln y_i$, so that all eight fits are likelihoods of the same observed quantity and their AIC and BIC values are directly comparable across both functional form and error structure. This addresses the fact that a naive ordinary least squares fit on log-log axes is not comparable, on its own, to a fit on the natural scale.
+\DIFaddbegin \DIFadd{Two degree-preserving randomisations were used, both by double-edge swaps, which
+preserve in- and out-degree exactly.
+}
+
+\DIFadd{The first randomises the DUS network itself. The spine $U_0 \to U_1 \to \cdots$
+is forced by Eq.~(\ref{DUS_definition}) and is held fixed. The remaining skip
+dependencies are rewired by repeatedly choosing two of them, $a \to b$ and
+$c \to d$, and replacing them by $a \to d$ and $c \to b$ whenever both results
+are still forward skips and neither already exists. This preserves each level's
+skip in-degree and skip out-degree and the acyclicity of the network. We used
+20 swap attempts per skip edge and averaged over 20 randomisations per project;
+the resulting $C$ and $L$ are unchanged between 5 and 80 swap attempts per edge,
+so the chain is well mixed.
+}
+
+\DIFadd{The second randomises the activity network. A topological order of the observed
+DAG is fixed, and pairs of dependencies are swapped whenever both resulting
+edges still point forward in that order, which preserves every activity's in-
+and out-degree and guarantees the result is acyclic. The DUS decomposition is
+then recomputed from scratch. This randomisation mixes more slowly: the number
+of DUS levels is still drifting at 20 swap attempts per edge, and the gap
+between the observed and randomised networks widens as mixing proceeds, so the
+ratios reported for it are conservative bounds rather than converged estimates.
+}
+
+\DIFadd{Clustering is measured by the transitive clustering coefficient, the number of
+directed two-paths $i \to j \to k$ closed by an edge $i \to k$ divided by the
+number of directed two-paths. Distances are shortest-path distances to the final
+DUS level, as elsewhere in the paper.
+}
+
+\subsection*{\DIFadd{Statistical methods}}
+
+\DIFadd{For each relation we fitted four candidate functional forms: a one-parameter logarithm $y = p\ln x$, a two-parameter logarithm $y = p\ln x + c$, a power law $y = a x^{b}$, and a linear relation $y = ax + b$. Each was fitted by maximum likelihood under two error structures: additive, $y = f(x) + \varepsilon$ with $\varepsilon \sim N(0,\sigma^2)$, and multiplicative, $y = f(x)\,e^{\varepsilon}$ with $\varepsilon \sim N(0,\sigma^2)$. The multiplicative log-likelihoods include the Jacobian term $-\sum_i \ln y_i$, so that all eight fits are likelihoods of the same observed quantity and their AIC and BIC values are directly comparable across both functional form and error structure. This addresses the fact that a naive ordinary least squares fit on log-log axes is not comparable, on its own, to a fit on the natural scale.
 }
 
 \DIFadd{Confidence intervals are nonparametric case-resampling bootstraps with 2000 replicates, which do not assume homoscedastic residuals; this matters for the DPS relation, whose residuals are heteroscedastic. Heteroscedasticity was assessed with a Breusch--Pagan test of the squared residuals against $\ln x$.
@@ -428,9 +487,8 @@ Reinhard Wagner, Martina Huemann, and Mladen Radujkovic.
 Lars Tax{\'e}n.
 \newblock {\em The System Anatomy – Enabling Agile Project Management}.
 \newblock Studentlitteratur, Lund, 2011.
-\DIFaddbegin 
 
-\bibitem{kelley1959cpm}
+\DIFaddbegin \bibitem{kelley1959cpm}
 \DIFadd{James~E. Kelley~Jr. and Morgan~R. Walker.
 }\newblock \DIFadd{Critical-path planning and scheduling.
 }\newblock \DIFadd{In }{\em \DIFadd{Papers Presented at the December 1--3, 1959, Eastern Joint
@@ -521,9 +579,9 @@ Lars Tax{\'e}n.
 \DIFadd{Rainer Kolisch and Arno Sprecher.
 }\newblock {\DIFadd{PSPLIB}} \DIFadd{--- a project scheduling problem library.
 }\newblock {\em \DIFadd{European Journal of Operational Research}}\DIFadd{, 96(1):205--216, 1997.
-}\DIFaddend 
+}
 
-\bibitem{radicchi_communities_2004}
+\DIFaddend \bibitem{radicchi_communities_2004}
 Filippo Radicchi, Claudio Castellano, Federico Cecconi, Vittorio Loreto, and
   Domenico Parisi.
 \newblock Defining and identifying communities in networks.
@@ -571,6 +629,13 @@ E.~G. Coffman and R.~L. Graham.
 Duncan~J. Watts and Steven~H. Strogatz.
 \newblock Collective dynamics of ‘small-world’ networks.
 \newblock {\em Nature}, 393(6684):440--442, June 1998.
+\DIFaddbegin 
+
+\bibitem{vazquez2023activity}
+\DIFadd{Alexei Vazquez, Iacopo Pozzana, Georgios Kalogridis, and Christos Ellinas.
+}\newblock \DIFadd{Activity networks determine project performance.
+}\newblock {\em \DIFadd{Scientific Reports}}\DIFadd{, 13:509, 2023.
+}\DIFaddend 
 
 \bibitem{boldi2002fibration}
 Paolo Boldi and Sebastiano Vigna.

@@ -35,8 +35,12 @@ the sub-linear power law for the DPS, but the DUS relation explains only 27\%
 of the variance and does not extrapolate to the public PSPLIB benchmark. I have
 therefore stopped calling it a scaling law and describe it as slow logarithmic
 growth of the central trend.
-\item The small-world claim has been withdrawn in its strong form, as
-Reviewer 1 requested, and replaced by the precise statement the data support.
+\item The small-world question is now settled by the analysis Reviewer 1 asked
+for. Clustering is given a DAG-appropriate definition, two degree-preserving
+null models are built, and the result is that the short distances follow from
+the degree distributions of the DUS network rather than from any special
+arrangement of the shortcuts. The distances are short; the Watts--Strogatz
+criterion is simply not the informative test for these networks.
 \item The finer construction has been renamed from DFS to DPS (Dependency
 Predecessor Structure) to remove the clash with depth-first search.
 \item All key results are now replicated on public data (PSPLIB and two
@@ -269,22 +273,70 @@ short path lengths but also high clustering compared to degree-preserving random
 graphs\ldots{} the authors would need to clearly specify how clustering is defined
 in a DAG.}
 
-\reply Accepted, and the claim has been withdrawn in its strong form. The
-reviewer is right on both counts: falling below the chain expectation is nearly
-tautological, and the Watts--Strogatz definition requires a clustering
-comparison that the paper did not make. I would add that the difficulty is more
-than one of effort --- the standard clustering coefficient counts closed
-triangles, and in a DAG a directed triangle cannot close, so the quantity is not
-merely unmeasured but undefined without a new construction. Choosing a
-DAG-appropriate clustering statistic and its correct degree-preserving null
-model is a research question in its own right, and I did not want to invent one
-in order to rescue a label.
+\reply Accepted on both counts, and the analysis the reviewer asks for has now
+been carried out. Falling below the chain expectation is indeed nearly
+tautological, and the original manuscript did not make the clustering
+comparison. The reviewer is also right that clustering needs defining first: the
+standard coefficient counts closed triangles, and a {\em cyclic} triangle cannot
+exist in a DAG.
 
-The paper now makes the weaker claim the data actually support, in the terms the
-reviewer suggested. The relevant text reads that shortcuts make the DUS network
-shallow and that its depth does not grow appreciably with project size. The
-supporting evidence has been strengthened beyond the chain comparison, because
-the interesting fact turned out not to be the gap but the flatness:
+That last point has a clean resolution, which the revision adopts. A cyclic
+triangle is impossible in a DAG, but a {\em transitive} one is not: $i \to j$,
+$j \to k$ and the shortcut $i \to k$ are mutually consistent with acyclicity. We
+therefore use the transitive clustering coefficient $C$, the fraction of
+directed two-paths $i \to j \to k$ closed by an edge $i \to k$. It is the
+admissible member of the directed-triangle family, it is precisely the quantity
+that a shortcut creates, and it is zero for a pure chain. This is now stated in
+the Results and defined in a new Methods subsection.
+
+Two degree-preserving null models were then built, both by double-edge swaps.
+The first holds the DUS spine fixed, since Eq.~(1) forces it and randomisation
+should not be free to destroy it, and rewires the skip dependencies while
+preserving every level's skip in- and out-degree. The second preserves the in-
+and out-degree of every {\em activity}, keeps the network acyclic by requiring
+every edge to point forward in a fixed topological order, and re-derives the DUS
+decomposition from scratch. Mixing was checked in both cases.
+
+The result, over 198 projects, is that the observed clustering and the observed
+distances are almost exactly those of the first null: $C/C_{\mathrm{null}} =
+1.04$ (IQR $[1.01, 1.10]$) and $L/L_{\mathrm{null}} = 1.03$ (IQR
+$[1.00, 1.08]$). This is a new Figure 7 and a new Results subsection.
+
+I want to be careful about what this does and does not show, because it is easy
+to misread it as a negative result. It does {\em not} cast doubt on the
+networks having small average distances --- that is a measured property of the
+data, and no null model can remove it: the mean distance to the end is $2.5$
+levels where a chain of the same depth would give up to $285$. What it shows is
+{\em why} the distances are small. Given how many long-range dependencies each
+level has, placing them anywhere at all reproduces the observed distances, so
+the shallowness follows from the degree distributions of the DUS network rather
+than from any special arrangement of the shortcuts. That is a mechanistic
+explanation, and a positive one. It also connects to the generative side of the
+problem: the duplication-split model of activity networks (Vazquez et al.,
+Sci.\ Rep.\ 13, 509, 2023) produces degree distributions of exactly this kind,
+and the present result establishes that such distributions are sufficient for
+the effect.
+
+What the analysis does bear on is the Watts--Strogatz {\em criterion}
+specifically, which asks for clustering substantially in excess of a
+degree-matched null. That excess is absent, so the criterion is not the
+informative test for these networks, and the manuscript states the property
+directly rather than invoking the label. This is a statement about which
+diagnostic is appropriate, not about whether the distances are short.
+
+The second null adds a complementary finding. Preserving only the activity
+degree sequence and re-deriving the decomposition gives DUS networks roughly
+half as deep as the real ones (median $m/m_{\mathrm{null}} \approx 2$, a
+conservative figure, since this randomisation mixes slowly and the gap widens
+as it proceeds). So the degree distributions determine how short the paths
+through the DUS network are, but not how deep it is; real schedules retain
+genuine sequential structure that the degree sequence alone does not capture.
+The Discussion now poses the generative origin of that depth as the open
+question, in place of the definition of clustering, which is settled above.
+
+The distance evidence itself has also been strengthened beyond the chain
+comparison, because the interesting fact turned out not to be the gap but the
+flatness:
 
 \begin{itemize}
 \item The mean distance to the final DUS level has median $2.5$ with
@@ -306,8 +358,9 @@ axes obscured it.
 \end{itemize}
 
 The word ``small-world'' now appears only where the shortcut mechanism is
-attributed to Watts and Strogatz, not as a claimed property of the networks. The
-Discussion lists the definition of clustering in a DAG as an open question.
+attributed to Watts and Strogatz, and where the Watts--Strogatz criterion is
+discussed and set aside for the reason given above, never as an unexamined
+label.
 
 \subsection*{4. Proprietary data, descriptive statistics and public replication}
 
