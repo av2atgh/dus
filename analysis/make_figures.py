@@ -409,6 +409,34 @@ def fig6():
     savefig(fig, "fig6.pdf")
 
 
+def fig7():
+    """Small-world test: clustering and distance against degree-preserving nulls."""
+    d = pd.read_csv(HERE / "smallworld.csv")
+    fig, ax = plt.subplots(1, 2, figsize=(11.5, 4.4))
+
+    for k, (obs, null, lab) in enumerate([
+        ("C", "C_spine", "Transitive clustering $C$"),
+        ("L", "L_spine", "Mean distance to final level $L$"),
+    ]):
+        a = ax[k]
+        s = d[np.isfinite(d[obs]) & np.isfinite(d[null]) & (d[null] > 0)]
+        a.scatter(s[null], s[obs], s=16, alpha=0.55, color="#377eb8",
+                  edgecolors="none")
+        lo = min(s[null].min(), s[obs].min())
+        hi = max(s[null].max(), s[obs].max())
+        pad = 0.05 * (hi - lo)
+        a.plot([lo - pad, hi + pad], [lo - pad, hi + pad], "k--", lw=1.6,
+               label="observed = null")
+        a.set(xlabel=f"{lab}, degree-preserving null", ylabel=f"{lab}, observed",
+              xlim=(lo - pad, hi + pad), ylim=(lo - pad, hi + pad))
+        r = (s[obs] / s[null]).median()
+        a.text(0.04, 0.94, f"({'AB'[k]}) median ratio $= {r:.2f}$",
+               transform=a.transAxes, va="top", fontsize=11)
+        a.legend(loc="lower right", frameon=False, fontsize=10)
+    fig.subplots_adjust(wspace=0.28)
+    savefig(fig, "fig7.pdf")
+
+
 if __name__ == "__main__":
     fig1()
     fig2()
@@ -416,3 +444,4 @@ if __name__ == "__main__":
     fig4()
     fig5()
     fig6()
+    fig7()

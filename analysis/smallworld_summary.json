@@ -1,0 +1,15 @@
+{
+  "n_projects": 200,
+  "C_obs_median": 0.5091748894751746,
+  "L_obs_median": 2.3125,
+  "C_spine_median": 0.48757788539612196,
+  "L_spine_median": 2.0215154471544716,
+  "C_ratio_spine_median": 1.043068689145989,
+  "L_ratio_spine_median": 1.0308005181768158,
+  "n_forward": 40,
+  "C_fwd_median": 0.6056788866252227,
+  "L_fwd_median": 1.9053320588825085,
+  "C_ratio_fwd_median": 0.7932080051780763,
+  "L_ratio_fwd_median": 1.188928844679545,
+  "m_ratio_fwd_median": 1.697007534372916
+}
