@@ -1,0 +1,582 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{parskip}
+
+\newcommand{\rev}[1]{\medskip\noindent\textit{#1}\par\medskip}
+\newcommand{\reply}{\noindent\textbf{Response.}\ }
+
+\title{Response to Reviewers\\
+\large High-Level Structure of Dependency Networks}
+
+\author{Alexei Vazquez}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+I thank the three reviewers for their careful and constructive reading. The
+comments identified two genuine weaknesses --- insufficient statistical support
+for the claimed relations, and an incomplete engagement with the neighbouring
+literatures --- and several presentational problems. I have addressed all of
+them, and in doing so I have had to weaken two of the claims made in the
+original manuscript. Specifically:
+
+\begin{itemize}
+\item The number of projects analysed is 1198, not a handful. This was not
+stated in the original manuscript, which is why Reviewer 1 reasonably assumed
+the sample was small. A descriptive statistics table has been added.
+\item Formal model selection now supports the logarithmic form for the DUS and
+the sub-linear power law for the DPS, but the DUS relation explains only 27\%
+of the variance and does not extrapolate to the public PSPLIB benchmark. I have
+therefore stopped calling it a scaling law and describe it as slow logarithmic
+growth of the central trend.
+\item The small-world claim has been withdrawn in its strong form, as
+Reviewer 1 requested, and replaced by the precise statement the data support.
+\item The finer construction has been renamed from DFS to DPS (Dependency
+Predecessor Structure) to remove the clash with depth-first search.
+\item All key results are now replicated on public data (PSPLIB and two
+anonymised real schedules shipped with the code), and every number and figure
+in the paper is produced by scripts included in the public repository.
+\end{itemize}
+
+The paper has been restructured accordingly: the schematic that was Figure 4 is
+now Figure 1, a descriptive statistics table and two new figures have been
+added, and the manuscript now has six figures and one table.
+
+\section*{Reviewer 1}
+
+\rev{The manuscript proposes a deterministic two-step coarse-graining method for
+dependency DAGs\ldots{} the current version of this paper shows some weaknesses in
+terms of its originality, statistical rigor, and the validation of the two
+arguments presented.}
+
+\reply I agree with this assessment of the original version. Each of the four
+points is addressed below.
+
+\subsection*{1. Missing comparison with DSM, WBS/CPM and DAG condensation}
+
+\rev{From a project management perspective, the Design Structure Matrix (DSM)
+literature has a long history regarding the clustering and ordering of dependency
+matrices, and the concepts of WBS and CPM are conceptually very similar. Yet,
+this paper does not cite or compare these studies. From a computer science
+perspective, DAG condensation and hierarchical graph techniques are similarly
+relevant.}
+
+\reply Accepted. The Introduction now contains a paragraph that positions the
+work against both literatures and states explicitly what is and is not new.
+
+On the project management side, I now cite Steward's original DSM paper,
+Browning's review and the Eppinger--Browning monograph, and I draw the
+distinction that matters: DSM sequencing and the layering used here both look
+for an ordering compatible with the dependencies, but DSM methods are typically
+applied to matrices that contain cycles, where the object is to find and break
+feedback loops, and DSM clustering is usually the outcome of an optimisation
+with tunable objectives and no unique answer. The construction here applies to
+acyclic networks, involves no optimisation and no free parameters, and is aimed
+at compression rather than resequencing. CPM is now cited at the point where the
+schedule is introduced, and the relationship is made explicit in the DUS section:
+the DUS index of the final activity is the number of activities on the longest
+dependency chain, which is the critical path when all activities have equal
+duration. The relation to the WBS is now a structural part of the paper rather
+than a passing remark --- Figure 1A shows a WBS, Figure 1B the dependency network
+of its leaves, and the caption points out a dependency that crosses a WBS branch
+boundary, which is the reason the two views do not coincide.
+
+On the computer science side I now cite and distinguish three things that might
+otherwise be confused with this construction. Condensation by strongly connected
+components (Tarjan) is the standard way to turn a digraph into a DAG; applied to
+a schedule, which is already acyclic, it does nothing at all. Transitive
+reduction (Aho, Garey and Ullman) removes redundant edges but preserves every
+node and therefore achieves no node-level compression. Layered graph drawing
+(Sugiyama; Healy and Nikolov) does assign nodes to layers by essentially
+Eq.~(1), which the original manuscript already acknowledged, but treats the
+layering as a step towards a picture rather than as an object of study.
+
+I want to be straightforward about the resulting claim of novelty, which is
+narrower than the original manuscript implied. The DUS index is the standard
+longest-path layering and I do not claim it as new. What I claim is: its use as
+a coarse-graining with measured compression, the empirical relations of Figures
+3 and 5 with the model selection now supporting them, the DPS refinement, and
+the observation that the resulting networks are shallow. This is now stated in
+those terms at the end of the DUS section.
+
+\subsection*{2. Statistical support for the scaling relations}
+
+\rev{(i) The logarithmic fit in Figure 2 appears to be a single-parameter fit;
+the sample size, a goodness-of-fit measure, and a confidence interval on p should
+be reported\ldots{} a model-selection argument (e.g., AIC/BIC or a likelihood-based
+comparison) is needed to justify the logarithmic form.}
+
+\reply Accepted in full, and this changed the results. The analysis has been
+redone as follows. Four functional forms (one- and two-parameter logarithms, a
+power law, a linear relation) were each fitted by maximum likelihood under two
+error structures (additive and multiplicative), giving eight fits. The
+multiplicative log-likelihoods include the Jacobian term $-\sum_i \ln y_i$ so
+that all eight are likelihoods of the same observed quantity and their AIC
+values are directly comparable across both functional form and error structure.
+This is described in a new Statistical methods subsection.
+
+The outcome supports the logarithmic form, but with a caveat the original
+manuscript did not report:
+
+\begin{itemize}
+\item The preferred model is the two-parameter logarithm with multiplicative
+errors, $m = 14.3\ln x - 33.9$. The reviewer was right that the published fit
+was a one-parameter logarithm; that form is now rejected by
+$\Delta\mathrm{AIC} = 45$.
+\item It is preferred over the power law by $\Delta\mathrm{AIC} = 22$ and over
+the linear relation by $\Delta\mathrm{AIC} = 147$. The best-fitting power law
+has exponent $0.17$, which as the reviewer anticipated is small enough that the
+two forms are hard to separate visually; the likelihood comparison is what
+separates them.
+\item $n = 1198$. The 95\% bootstrap confidence interval on the logarithmic
+coefficient is $[13.4, 15.2]$. Residuals show no detectable heteroscedasticity
+(Breusch--Pagan $p = 0.07$).
+\item Goodness of fit is modest: $R^2 = 0.27$ on the logarithm. This is now
+stated in the text, and Figure 3 shows binned medians with interquartile ranges
+so that the reader can see the scatter directly.
+\end{itemize}
+
+Given $R^2 = 0.27$, and given the extrapolation failure described under point 4
+below, I have removed the term ``scaling law'' for this relation and describe it
+instead as slow logarithmic growth of the central trend. The compression claim
+survives and is now quantified concretely: a tenfold increase in dependencies
+adds about 33 DUS levels regardless of starting size.
+
+\rev{(ii) The power-law fit in Figure 5 should specify the fitting method; a naive
+log-log OLS is biased, so a Clauset--Shalizi--Newman-style procedure (Clauset et
+al. 2009), or at least residual diagnostics and a confidence interval on the
+exponent, would be appropriate.}
+
+\reply The fitting method is now specified in full, and residual diagnostics and
+a confidence interval are reported. The preferred model is a power law under
+multiplicative errors, $1.56\,x^{0.69}$, ahead of the linear relation by
+$\Delta\mathrm{AIC} = 314$ and the two-parameter logarithm by
+$\Delta\mathrm{AIC} = 1328$. The exponent is $0.694$ with a 95\% bootstrap
+confidence interval of $[0.679, 0.709]$, comfortably excluding $1$, and
+$R^2 = 0.81$ on the logarithm. The residuals of this fit are heteroscedastic,
+which is now stated explicitly; this is precisely why the interval quoted is a
+nonparametric case-resampling bootstrap rather than a nominal standard error.
+
+On the Clauset--Shalizi--Newman procedure I would respectfully disagree, and
+have added a short paragraph to Methods explaining why. That procedure fits and
+tests a heavy-tailed \emph{probability distribution} of a single random
+variable, using maximum likelihood for the tail exponent above an estimated
+$x_{\min}$ together with a Kolmogorov--Smirnov goodness-of-fit test. The
+relation in Figure 5 is not a distribution: it is a regression of one measured
+quantity (number of DPS classes) on another (number of dependencies) across
+projects. The estimator, the $x_{\min}$ selection step and the KS test all
+presuppose i.i.d. draws from a distribution and have no direct analogue here.
+The reviewer's underlying concern --- that naive log-log OLS is not a neutral
+choice --- is entirely valid, and I have addressed it in the way that is
+appropriate for a regression: by making the error model an explicit part of the
+model comparison rather than an unstated assumption, and by using a bootstrap
+that does not assume homoscedasticity. I would of course reconsider if the
+reviewer thinks a distributional formulation is called for.
+
+\rev{(iii) The claim that all three companies follow the same relation should be
+supported by a test of parameter commonality rather than visual impression. When
+the sample size is small (only a few projects per company), the use of strong
+terms such as ``scaling law'' should be used with appropriate moderation.}
+
+\reply Accepted, and this is now tested formally. I should first correct a
+factual premise, and the fault for it is mine: the sample is not small. It
+comprises 1198 projects --- 82, 249 and 867 from the three companies. The
+original manuscript said only that ``each company contributed several
+projects'', which was uninformative and invited exactly this reading. The new
+Table 1 gives the full breakdown.
+
+Commonality is tested with nested likelihood ratio tests comparing three models:
+fully pooled parameters; a shared logarithmic coefficient or power-law exponent
+with company-specific offsets or prefactors; and fully company-specific
+parameters. This separates the question of whether the companies share the
+\emph{form} of the relation from whether they share its nuisance parameters, and
+the two answers turn out to be different:
+
+\begin{itemize}
+\item DUS: a shared logarithmic coefficient is not rejected
+($\mathrm{LR} = 2.4$, $\mathrm{df} = 2$, $p = 0.30$; shared value $15.1$), and
+AIC prefers the shared-coefficient model. The offsets do differ
+($p = 5 \times 10^{-9}$).
+\item DPS: a shared exponent is not rejected ($\mathrm{LR} = 1.4$,
+$\mathrm{df} = 2$, $p = 0.50$; shared value $0.71$), while the prefactors differ
+($p = 4 \times 10^{-7}$).
+\end{itemize}
+
+So the original claim that ``the same relation describes all three companies''
+is supported in the sense that matters --- the rate of growth is common --- but
+was too strong as stated, because the intercepts and prefactors are
+significantly company-specific. The revised text says exactly this and
+interprets the difference as company-specific scheduling practice shifting the
+absolute level without changing the rate.
+
+On terminology I have followed the reviewer's advice throughout. The phrase
+``scaling law'' no longer appears anywhere in the manuscript as a claim. The DUS
+relation is described as slow logarithmic growth of the central trend, for the
+reasons above. The DPS relation is described as a sub-linear power law, which is
+a statement about functional form rather than a claim of universality, and it is
+the better supported of the two: a power law is preferred by a very large
+margin, the exponent is tightly determined, $R^2 = 0.81$, and the relation
+extrapolates successfully to independent public data.
+
+\subsection*{3. The small-world claim}
+
+\rev{The evidence supporting the small-world claim is weak\ldots{} this argument
+simply shows that the average distance is less than the expected value for a
+pure chain. Since any shortcut reduces the distance compared to a chain, this is
+almost a trivial statement. The Watts--Strogatz definition requires not only
+short path lengths but also high clustering compared to degree-preserving random
+graphs\ldots{} the authors would need to clearly specify how clustering is defined
+in a DAG.}
+
+\reply Accepted, and the claim has been withdrawn in its strong form. The
+reviewer is right on both counts: falling below the chain expectation is nearly
+tautological, and the Watts--Strogatz definition requires a clustering
+comparison that the paper did not make. I would add that the difficulty is more
+than one of effort --- the standard clustering coefficient counts closed
+triangles, and in a DAG a directed triangle cannot close, so the quantity is not
+merely unmeasured but undefined without a new construction. Choosing a
+DAG-appropriate clustering statistic and its correct degree-preserving null
+model is a research question in its own right, and I did not want to invent one
+in order to rescue a label.
+
+The paper now makes the weaker claim the data actually support, in the terms the
+reviewer suggested. The relevant text reads that shortcuts make the DUS network
+shallow and that its depth does not grow appreciably with project size. The
+supporting evidence has been strengthened beyond the chain comparison, because
+the interesting fact turned out not to be the gap but the flatness:
+
+\begin{itemize}
+\item The mean distance to the final DUS level has median $2.5$ with
+interquartile range $[1.9, 3.6]$, essentially independent of the number of
+levels $m$, which ranges from $14$ to $571$. Binned medians are $3.4$, $2.3$ and
+$2.7$ for small, medium and large projects.
+\item The rank correlation between distance and $m$ is $\rho = 0.10$
+($p = 8\times10^{-4}$, $n = 1198$): nominally significant at this sample size
+but negligible in magnitude. For completeness the manuscript also reports that
+the same model selection procedure formally prefers a weakly increasing linear
+relation over a strictly constant one ($\Delta\mathrm{AIC} = 20$, slope $0.0041$
+per level, 95\% CI $[0.0019, 0.0062]$). The implied growth is negligible: across
+the whole range the fitted distance rises from $2.5$ to $4.7$, a factor of
+$1.9$, while $m$ grows by a factor of $41$. I preferred to report this rather
+than claim exact constancy.
+\item Figure 4 is now on logarithmic axes, which makes the contrast between the
+flat data and the rising chain expectation directly visible; the original linear
+axes obscured it.
+\end{itemize}
+
+The word ``small-world'' now appears only where the shortcut mechanism is
+attributed to Watts and Strogatz, not as a claimed property of the networks. The
+Discussion lists the definition of clustering in a DAG as an open question.
+
+\subsection*{4. Proprietary data, descriptive statistics and public replication}
+
+\rev{It would be advisable for the paper to include at least descriptive
+statistics---namely, the number of projects per firm, the range of activity and
+dependency counts, and basic summary information on the distribution.
+Furthermore, reproducing key scalability results using publicly available
+scheduling datasets (e.g., PSPLIB) would significantly enhance the replicability
+of the research arguments.}
+
+\reply Both accepted and done.
+
+Table 1 now reports, per company and overall, the number of projects and the
+median and full range of the number of activities, dependencies, DUS levels and
+DPS classes. The dataset spans 37 to 104{,}981 activities and 36 to 150{,}692
+dependencies. The Methods section also now records the one schedule that was
+excluded from the original analysis and why (its first DUS level connects to
+every other level, so its DUS network is a star rather than a network with a
+spine); this exclusion was applied but not reported in the original manuscript.
+
+For replication I have analysed all 2040 single-mode PSPLIB instances (j30, j60,
+j90, j120), plus the two anonymised real schedules that are distributed with the
+code repository and which extend the publicly reproducible range to $1.3\times
+10^{5}$ dependencies. This is a new figure (Figure 6) and a new Results
+subsection. The result is mixed, and I report it as such:
+
+\begin{itemize}
+\item PSPLIB instances have 32--122 activities and 48--257 dependencies, come in
+only four activity counts, and span barely half a decade in size. Model selection
+within PSPLIB alone favours a power law for the DUS and a linear relation for the
+DPS, which are not the forms selected on the construction data; over so narrow a
+range I do not treat that as evidence about functional form, and the manuscript
+reports it as such rather than presenting a within-PSPLIB fit as a confirmation.
+\item What PSPLIB can test is transfer. Its dependency range overlaps only the
+extreme lower tail of ours --- just $2.4\%$ of the construction projects are that
+small --- so it probes the relations where they were barely constrained. The DPS
+power law, fitted on construction data and evaluated two orders of magnitude
+below the median project on which it was estimated, predicts the PSPLIB values to
+a median observed/predicted ratio of $0.76$. The power law fitted within PSPLIB
+alone gives exponent $0.86$, also sub-linear. This is a genuine out-of-sample
+success.
+\item The DUS logarithm does not extrapolate: it over-predicts PSPLIB by more
+than a factor of two (median ratio $0.42$). The paper now states that the
+logarithmic relation describes large construction schedules rather than being
+universal, which is the second reason for dropping the term ``scaling law'' for
+it.
+\item The qualitative shallowness result does replicate: median distance to the
+final level $2.1$, below the chain expectation in $100\%$ of instances.
+\end{itemize}
+
+Finally, the code repository now contains the scripts that perform every
+statistical test, download and process PSPLIB, and generate every figure and the
+table in the paper, so that all public-data results can be reproduced end to end.
+
+\section*{Reviewer 2}
+
+\rev{Both methods reveal a small-world structure in the underlying dependency
+network\ldots{} I would like to highlight two main limitations.}
+
+\reply I thank the reviewer for an accurate summary. Note that the small-world
+claim has been withdrawn following Reviewer 1's point 3; see that response.
+
+\subsection*{1. Structure and placement of illustrative material}
+
+\rev{The structure of the paper is unconventional, and key illustrative material
+is placed too late. For instance, the illustration of the two metrics appears in
+Figure 4, whereas it would be far more effective as Figure 1, orienting the
+reader from the outset.}
+
+\reply Accepted. The schematic is now Figure 1 and appears in the Introduction,
+before either construction is defined. It has also been substantially redrawn
+and expanded to three panels so that it can carry more of the exposition:
+panel A is a small Work Breakdown Structure, panel B the dependency network of
+its leaf activities with the DUS index shown as vertical bands and the DPS class
+shown by colour, and panel C the two coarse-grained networks. The example was
+chosen so that the DPS genuinely refines the DUS --- two activities share a DUS
+level and a DPS class while a third shares their level but forms its own class
+--- which the original schematic did not illustrate. Panels A and B also make
+visible the point that dependencies cross WBS branches.
+
+The figure order is now Figure 1 schematic, Figure 2 real DUS profiles, Figure 3
+DUS scaling, Figure 4 distances, Figure 5 DPS scaling, Figure 6 public
+replication, plus Table 1.
+
+\rev{I would introduce DAGs more extensively, and move the first paragraph of the
+Results section into the Introduction.}
+
+\reply Both done. The first paragraph of Results has been moved into the
+Introduction and expanded into a fuller treatment of DAGs: the definition, the
+acyclicity requirement and why it is forced, topological order, the notion of
+incomparability that the DUS relies on, and a note that DAGs also represent
+causal models, ancestries and feedforward networks, which is what makes the
+constructions transferable. The Results section now opens directly with the DUS
+definition.
+
+\subsection*{2. Missing literature: symmetry, compression, hyperbolic embeddings}
+
+\rev{The authors overlook a substantial body of related work, including directed
+acyclic graphs (DAGs), network symmetry, compression symmetry, and hyperbolic
+embeddings. As examples, I would point to Krioukov et al., ``Hyperbolic geometry
+of complex networks'', and S\'anchez-Garc\'ia, ``Exploiting symmetry in network
+analysis''.}
+
+\reply Accepted, and both suggested references are now cited, along with
+related work the reviewer's comment led me to. The new related-work paragraph in
+the Introduction places this paper among approaches to meso-scale structure that
+do not rely on statistical inference: exact symmetry (MacArthur, S\'anchez-Garc\'ia
+and Anderson; S\'anchez-Garc\'ia), graph fibrations (Boldi and Vigna; Morone et
+al., already cited in the original), latent hyperbolic geometry (Krioukov et
+al.), and explicit hierarchy measures for directed networks (Mones et al.;
+Corominas-Murtra et al.).
+
+The connection to the symmetry literature is more than bibliographic and I have
+made it explicit in the DPS section. Two activities in the same DPS class have
+predecessor sets occupying the same DUS levels, which is a local symmetry of the
+sort that fibrations formalise; the DPS can be read as a coarse, level-indexed
+relaxation of a fibration, which is what makes it computable by a single pass
+and labellable by one integer. S\'anchez-Garc\'ia's framing of symmetry as a
+route to network reduction is exactly the use made of it here.
+
+\subsection*{Minor comments}
+
+\rev{The construction of the DUS and DFS networks needs clearer explanation;
+there is currently some confusion between the network itself and the associated
+metric/category.}
+
+\reply Accepted; this was a real ambiguity in the original text, which used
+``DUS'' for the index, for a single level, and for the partition. The paper now
+names four distinct objects and uses them consistently: the \emph{DUS index}
+$u_i$, an integer attached to an activity; a \emph{DUS level}, the set of
+activities sharing one index value; the \emph{Dependency Uprise Structure}, the
+partition into levels; and the \emph{DUS network}, whose nodes are levels. The
+same four-way distinction is drawn for the DPS. Phrases such as ``the number of
+DUSs'' have been replaced throughout by ``the number of DUS levels'' or ``the
+number of DPS classes''.
+
+\rev{``Equation (1)'' is referred to elsewhere in the text simply as ``(1),''
+which is ambiguous on first read.}
+
+\reply Fixed. All equation references now read ``Eq.~(1)'' or ``Eq.~(2)''.
+
+\rev{Figure 1 is very difficult to read due to the complexity (number of nodes
+and edges) of the network, which obscures a clear understanding of the method's
+benefits.}
+
+\reply Accepted, and the figure has been redrawn (it is now Figure 2). The
+original used a semicircular arc layout in which the level sizes, the spine and
+the skip dependencies were superimposed in one crowded picture. The new version
+separates them: the DUS spine runs along a linear horizontal axis, bars below
+give the number of activities per level coloured by progress, and arcs above
+show dependencies between non-adjacent levels, drawn as semicircles whose radius
+is the span so that long-range links are visually distinct from short ones. Only
+the strongest 5\% of skip dependencies are drawn, with the total stated on the
+figure so that nothing is hidden silently. Panel titles now give the activity,
+dependency and level counts. Both schedules shown are included in the public
+code repository, so the figure can be regenerated by any reader.
+
+\section*{Reviewer 3}
+
+\rev{Overall I like the paper, but I have a few comments.}
+
+\reply I thank the reviewer for the encouragement and for a set of comments that
+improved the exposition considerably.
+
+\subsection*{1. An example of a WBS}
+
+\rev{I am not in project management, so in the introduction it would be useful to
+see an example (even a simplified one) of a WBS, to get a better sense of the
+objects of study.}
+
+\reply Done. Figure 1A is a small WBS for a house, decomposed into substructure,
+superstructure and services and then into seven schedulable activities, and the
+Introduction now walks through it. The text notes that real construction WBSs
+have exactly this shape but reach tens of thousands of leaves. Figure 1B then
+shows the dependency network over those same seven activities, so the reader can
+see both objects and the fact that they do not coincide.
+
+\subsection*{2. A diagram for the DUS, and the relation to breadth-first search}
+
+\rev{The definition of the DUS is clear enough, but again, it seems like a diagram
+would be helpful here. Perhaps move Figure 4 to this section. How does the DUS
+index differ from a breadth first search starting from the root `project
+completed' node?}
+
+\reply The diagram has been moved forward as requested and now appears as
+Figure 1, ahead of both definitions; it is referenced from the DUS section.
+
+The breadth-first search question was a good one and the answer is now a
+paragraph in the DUS section. The two differ because breadth-first search
+computes \emph{shortest} path lengths while Eq.~(1) computes \emph{longest}
+ones. They disagree whenever an activity has predecessors at different depths.
+The paper gives the concrete case from Figure 1B: a breadth-first search from
+the start would place Utilities at depth 1, because Excavate feeds it directly,
+whereas Eq.~(1) places it at $u = 2$ because it must also wait for Foundations.
+Only the longest-path rule guarantees that every one of an activity's
+predecessors lies strictly below it, which is the property the whole
+construction depends on --- it is what makes the levels ordered, what makes
+activities within a level pairwise incomparable, and what guarantees the DUS
+spine exists. A backwards breadth-first search from the completion node is also
+addressed: it would group activities by remaining depth to the end rather than
+by accumulated depth from the start, which is a different and in general
+incompatible grouping.
+
+\subsection*{3. The name ``uprise''}
+
+\rev{On naming, what does `uprise' mean in this context? The usual use of the word
+is as a verb `uprising' meaning a rebellion which I don't think is the
+intention! Why not just `dependency structure'?}
+
+\reply The reviewer is right that the word is unusual, and the intended sense
+was never stated. It is now: the index counts how far an activity has risen
+above the start of the project, in dependency steps rather than in calendar
+time, and a sentence in the DUS section says so.
+
+I have kept the name, for two reasons I hope the reviewer will find reasonable.
+``Dependency structure'' on its own would be ambiguous, since it is a natural
+description of the dependency network itself, and it also collides with Design
+Structure Matrix terminology, which Reviewer 1 has asked me to engage with
+directly. And the name and its acronym are already in use in the public code
+repository. If the editor or the reviewer feels the term remains an obstacle, I
+am willing to rename it --- ``Dependency Level Structure'' would be the natural
+alternative --- but I did not want to change it unilaterally given the acronym
+is now load-bearing across the paper and the software.
+
+\subsection*{4. Redundant panels in Figure 1}
+
+\rev{Figure 1 is nice, but why include A and B when the same information is in C
+and D?}
+
+\reply Accepted; panels A and B have been removed. The figure (now Figure 2)
+shows only the two annotated profiles, which as the reviewer observed contain
+everything the bare networks did. The freed space has been used to draw the
+remaining panels larger and to add the readability improvements requested by
+Reviewer 2.
+
+\subsection*{5. The flat trend in Figure 3}
+
+\rev{I realise the point of Figure 3 is to show real DUSs fall below the line, but
+the data appears mostly constant indicating the same average distance to the end
+regardless of project size? Perhaps this is obvious in project management but
+seems worth commenting on.}
+
+\reply This was the single most useful observation in the reviews, and the
+reviewer is right. The data are nearly constant, this is not obvious in
+project management, and it is a stronger and more interesting statement than the
+one the original manuscript made. It is now the main claim of that section rather
+than an unremarked feature of the plot.
+
+Quantitatively: median distance $2.5$, interquartile range $[1.9, 3.6]$, with
+binned medians of $3.4$, $2.3$ and $2.7$ for projects with fewer than 50, 50--150
+and more than 150 DUS levels, while $m$ itself ranges from $14$ to $571$. The
+rank correlation with $m$ is $\rho = 0.10$, nominally significant at $n = 1198$
+but negligible. Figure 4 is now plotted on logarithmic axes with binned medians
+overlaid, which makes the flatness against the rising chain expectation obvious;
+on the original linear axes it was not. The text draws the practical
+consequence: a schedule with 500 DUS levels is not 500 steps deep in any
+operational sense, because long-range dependencies carry information to the end
+in two or three steps. This also connects to Reviewer 1's point 3, where the
+strong small-world claim has been replaced by exactly this statement.
+
+\subsection*{6. The DFS name and DPS visualisation}
+
+\rev{Regarding the name, I strongly suggest you change it since DFS=Depth First
+Search and this will probably cause a lot of confusion. Does the DFS admit any
+nice visualisations like Figure 1?}
+
+\reply Accepted without reservation --- the clash is real and would have caused
+confusion, particularly since the paper discusses graph traversal explicitly in
+answering the reviewer's point 2. The construction has been renamed throughout
+to \textbf{Dependency Predecessor Structure (DPS)}. The new name is also more
+descriptive: the grouping is defined precisely by which DUS levels an activity's
+predecessors occupy. The connection to graph fibrations is retained and made
+more explicit in the text, but it no longer drives the acronym.
+
+On visualisation, the DPS is now shown in Figure 1B, where DPS class is encoded
+by node colour, and in Figure 1C, where the DPS network is drawn alongside the
+DUS network so that the two coarse-grainings can be compared directly on the
+same example. I did not add a DPS analogue of the real-schedule profile in
+Figure 2. The reason is that a DPS network of a real project has of order
+$10^3$ nodes with no canonical linear ordering --- the DPS index is a
+categorical label, not a coordinate --- so the arc-diagram layout that makes the
+DUS profile legible has nothing to lay out against. Finding a good visual
+representation for the DPS network is noted as future work.
+
+\subsection*{7. Insight for project management}
+
+\rev{I assume the purpose of these constructions is to provide some insight into
+project management schedules. The author should discuss this.}
+
+\reply Accepted; the Discussion now has a paragraph devoted to this, giving
+three concrete uses. Reporting and tracking: the DUS profile compresses a
+schedule of tens of thousands of activities into a picture with of order a
+hundred nodes on which progress, cost or risk can be overlaid, and in which a
+stalled level or an unusual concentration of work is immediately visible.
+Diagnosis: the long arcs in Figure 2 are dependencies that skip many levels and
+therefore propagate delay furthest, which makes them natural candidates for
+scrutiny --- such a link is usually either a real structural constraint or an
+artefact of how the schedule was built. Input to risk models: a coarse-grained
+network with a hundred nodes is tractable for Monte Carlo simulation where one
+with a hundred thousand is not. The paragraph also notes why determinism matters
+in this setting: two planners applying the construction to the same schedule get
+the same answer, which is not true of clustering methods that depend on an
+objective function or a random seed. A further paragraph now states three
+limitations explicitly, including that the DUS is one antichain decomposition
+among many and is not claimed to be optimal by any criterion.
+
+\end{document}

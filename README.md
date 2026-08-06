@@ -24,6 +24,11 @@ uprise structure.
 │       ├── task_2.parquet
 │       ├── task_rel_1.parquet
 │       └── task_rel_2.parquet
+├── analysis/                # analysis behind the paper (see below)
+│   ├── stats.py             # model selection, bootstrap CIs, commonality tests
+│   ├── psplib.py            # PSPLIB download, DUS/DPS, public replication
+│   └── make_figures.py      # every figure in the paper
+├── manuscript/              # paper sources, figures and compiled PDFs
 ├── pyproject.toml
 ├── requirements.txt
 ├── LICENSE
@@ -63,3 +68,41 @@ each, and renders a 2x2 fishplot figure (saved as
 ## License
 
 See [LICENSE](LICENSE).
+
+## Reproducing the paper
+
+`analysis/` contains everything behind *High-Level Structure of Dependency
+Networks*. Each script can be run on its own from the repository root.
+
+```bash
+python analysis/psplib.py        # public data only -- no extra inputs needed
+python analysis/stats.py         # needs the proprietary summary CSV (see below)
+python analysis/make_figures.py  # writes fig1.pdf ... fig6.pdf to manuscript/
+```
+
+| Script | What it does |
+| --- | --- |
+| `stats.py` | Fits four functional forms under additive and multiplicative errors, compares them by AIC on a common likelihood scale, computes bootstrap confidence intervals, runs Breusch--Pagan diagnostics, and tests parameter commonality across companies with nested likelihood ratio tests. Writes `results.json` and `table1.tex`. |
+| `psplib.py` | Downloads the four single-mode PSPLIB sets (2040 instances), extracts each precedence DAG, computes the DUS and DPS decompositions, and refits the scaling relations. Also analyses the two anonymised schedules in `examples/data/`. Writes `psplib_instances.csv` and `psplib_results.json`. |
+| `make_figures.py` | Regenerates all six figures from the two result files. |
+
+### Data availability
+
+`psplib.py` is fully self-contained: it downloads the benchmark instances on
+first run (cached in `analysis/psplib_cache/`, which is not tracked) and also
+uses the two anonymised real schedules in `examples/data/`.
+
+`stats.py` and the parts of `make_figures.py` that plot the construction data
+need a per-project summary CSV derived from proprietary Nodes & Links
+schedules. That file is **not** distributed here. Point the script at it with:
+
+```bash
+export DUS_SUMMARY_CSV=/path/to/schedule_summary.csv
+```
+
+The committed `analysis/results.json` records the output of that run, so the
+figures and every number quoted in the paper can be inspected without access to
+the underlying schedules. The three contributing companies are anonymised as
+blue, green and orange; the colour assignment is derived from the data (by
+ascending project count), so no client identifiers appear anywhere in this
+repository.

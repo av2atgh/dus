@@ -9,3 +9,14 @@ dist/
 
 # example artefacts
 examples/example_output.png
+
+# PSPLIB archives are re-downloaded by analysis/psplib.py
+analysis/psplib_cache/
+
+# LaTeX build artefacts
+manuscript/*.aux
+manuscript/*.log
+manuscript/*.out
+manuscript/*.synctex.gz
+manuscript/*.bbl
+manuscript/*.blg
