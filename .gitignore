@@ -23,3 +23,9 @@ manuscript/*.blg
 
 # proprietary schedule summaries -- never commit
 data/
+
+# correspondence with the editor and reviewers -- kept local
+manuscript/cover.tex
+manuscript/cover.pdf
+manuscript/response.tex
+manuscript/response.pdf
