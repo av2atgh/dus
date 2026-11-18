@@ -1,0 +1,10 @@
+{
+  "upload_type": "software",
+  "title": "dus: Dependency Uprise Structure and Dependency Predecessor Structure of dependency networks",
+  "description": "Python implementation of the Dependency Uprise Structure (DUS) and Dependency Predecessor Structure (DPS) coarse-grainings of directed acyclic dependency networks, with the scripts that reproduce the statistical analysis, the PSPLIB replication and the figures of the paper \"Construction project dependency networks compress exponentially into logical-depth levels whose mean distance to project completion is nearly independent of project size\" (Scientific Reports, under review).",
+  "creators": [
+    {"name": "Vazquez, Alexei", "affiliation": "Nodes & Links Ltd, Cambridge, UK"}
+  ],
+  "license": "GPL-3.0-or-later",
+  "keywords": ["dependency networks", "directed acyclic graphs", "project scheduling", "coarse-graining", "construction projects", "PSPLIB"]
+}
